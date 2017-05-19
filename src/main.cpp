@@ -10,7 +10,6 @@
 #include <iomanip>
 #include <random>
 
-#define _USE_MATH_DEFINES
 
 #include "particle_filter.h"
 #include "helper_functions.h"

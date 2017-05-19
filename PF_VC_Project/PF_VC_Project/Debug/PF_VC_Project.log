@@ -1,34 +1,24 @@
-﻿Build started 5/19/2017 1:21:38 PM.
+﻿Build started 5/19/2017 2:28:51 PM.
      1>Project "C:\Users\Vatche\Documents\Udacity\Self Driving Car Engineer\Term 2\CarND-Kidnapped-Vehicle-Project\PF_VC_Project\PF_VC_Project\PF_VC_Project.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\particle_filter.cpp
          particle_filter.cpp
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(87): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(88): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(89): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(91): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(94): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(98): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(118): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(124): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(125): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(136): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(137): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(138): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(141): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(153): error C2664: 'std::discrete_distribution<>::discrete_distribution(const std::discrete_distribution<>::param_type &)' : cannot convert parameter 1 from 'std::vector<_Ty>' to 'const std::discrete_distribution<>::param_type &'
-                 with
-                 [
-                     _Ty=double
-                 ]
-                 Reason: cannot convert from 'std::vector<_Ty>' to 'const std::discrete_distribution<>::param_type'
-                 with
-                 [
-                     _Ty=double
-                 ]
-                 No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(89): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(90): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(91): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(93): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(96): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(100): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(120): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(126): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(127): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(138): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(139): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(140): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(143): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\vatche\documents\udacity\self driving car engineer\term 2\carnd-kidnapped-vehicle-project\src\particle_filter.cpp(165): error C2661: 'std::discrete_distribution<>::discrete_distribution' : no overloaded function takes 2 arguments
      1>Done Building Project "C:\Users\Vatche\Documents\Udacity\Self Driving Car Engineer\Term 2\CarND-Kidnapped-Vehicle-Project\PF_VC_Project\PF_VC_Project\PF_VC_Project.vcxproj" (Build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:01.56
+Time Elapsed 00:00:01.42

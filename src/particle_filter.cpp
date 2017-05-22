@@ -19,7 +19,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	//   x, y, theta and their uncertainties from GPS) and all weights to 1. 
 	// Add random Gaussian noise to each particle.
 	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
-	num_particles = 1;	//defining number of particles
+	num_particles = 100;	//defining number of particles
 	weights.resize(num_particles);
 	particles.resize(num_particles);
 
@@ -75,15 +75,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
 		//cout << "x noise " << particles[i].x << endl;
 
-		/* maybe need this:
-		normal_distribution<double> noise_x(0, std_pos[0]);
-		normal_distribution<double> noise_y(0, std_pos[1]);
-		normal_distribution<double> noise_theta(0, std_pos[2]);
-
-		particles[i].x = particles[i].x + noise_x(gen);
-		particles[i].y = particles[i].y + noise_y(gen);
-		particles[i].theta = particles[i].theta + noise_theta(gen);
-		*/
 	}
 
 
@@ -94,11 +85,11 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	//   observed measurement to this particular landmark.
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
 	//   implement this method and use it as a helper during the updateWeights phase.
-	float nearest_neighbor;
-	float po_dist_past = -1.0; //initialize the previous calculated distance
+	int nearest_neighbor;
+	double po_dist_past = -1.0; //initialize the previous calculated distance
 	for (int i=0; i<observations.size(); i++) {    //loop thru predicted landmarks
 		for (int j=0; j<predicted.size(); j++) {    //loop through landmark observations
-			float po_dist = dist(observations[i].x , observations[i].y , predicted[j].x , predicted[j].y);
+			double po_dist = dist(observations[i].x , observations[i].y , predicted[j].x , predicted[j].y);
 			if (po_dist_past < 0) {
 				nearest_neighbor = predicted[j].id; //select po_dist as the nearest neighbor
 				po_dist_past = po_dist;
@@ -109,7 +100,9 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 			}
 				
 		}
+		//cout << "obs id before: " << observations[i].id << endl;
 		observations[i].id = nearest_neighbor;	//assign the id of the nearest predicted landmark to the observation
+		//cout << "obs id after: " << observations[i].id << endl;
 		po_dist_past = -1.0;
 	}
 	//so now the loop is done. each osbservation will have a nearest neighbor landmark, assigned in its id
@@ -130,7 +123,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   http://planning.cs.uiuc.edu/node99.html
 
 	weights.clear();
-	std::vector<LandmarkObs> pred_map_data;
+	
 
 	for (int i=0; i<num_particles; i++) {    //loop thru particles
 		particles[i].weight = 1; //reinitialize at 1
@@ -143,10 +136,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			//cout << "obs x: " << observations[j].x << endl;
 		}
 		//call data association to place a landmark ID with each observation.
-		pred_map_data.clear();
+		std::vector<LandmarkObs> pred_map_data;
 		for (int k=0; k<map_landmarks.landmark_list.size(); k++) {
-			float landmark_dist = dist(map_landmarks.landmark_list[k].x_f , map_landmarks.landmark_list[k].y_f , particles[i].x  , particles[i].y);
-			if (landmark_dist < sensor_range) {
+			double landmark_dist = dist(map_landmarks.landmark_list[k].x_f , map_landmarks.landmark_list[k].y_f , particles[i].x  , particles[i].y);
+			if (landmark_dist <= sensor_range) {
 				LandmarkObs mark_temp;
 				mark_temp.id = map_landmarks.landmark_list[k].id_i; //check indices
 				mark_temp.x = map_landmarks.landmark_list[k].x_f;
@@ -156,12 +149,15 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		}
 		
 		dataAssociation(pred_map_data, tobservations); //associate a landmark with each observation
+		//cout << "tobs: " << tobservations[1].id << " " << tobservations[1].x << " "<<tobservations[1].y << endl;
+		//cout << "pred: " << map_landmarks.landmark_list[(tobservations[1].id -1)].id_i << " "<< map_landmarks.landmark_list[(tobservations[1].id -1)].x_f <<" "<< map_landmarks.landmark_list[(tobservations[1].id -1)].y_f << endl;
 		//calculate probabilities using multivariate gaussian probability for each observation, multiply with the weight.
 		float sigx = std_landmark[0];
 		float sigy = std_landmark[1];
 		for (int j=0; j<tobservations.size(); j++) {
 			int mark_num = tobservations[j].id -1;
 			//cout << "mark_num: " << mark_num << endl;
+			//cout << "landmark: " << map_landmarks.landmark_list[mark_num].id_i <<endl;
 			float x_sq = pow((tobservations[j].x - map_landmarks.landmark_list[mark_num].x_f),2);
 			float y_sq = pow((tobservations[j].y - map_landmarks.landmark_list[mark_num].y_f),2);
 			//cout << "x_sq= " << x_sq << " y_sq= " << y_sq << endl;
@@ -169,7 +165,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			//cout << "prb= " << prb << endl;
 			particles[i].weight *= prb;
 		}
-		cout << particles[i].weight << endl;
+		//cout << particles[i].weight << endl; debugging purposes only
 		weights.push_back(particles[i].weight);
 	}
 }
@@ -178,26 +174,23 @@ void ParticleFilter::resample() {
 	// TODO: Resample particles and replace with probability proportional to their weight. 
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
-	/*default_random_engine gen;	//set up random engine
-	discrete_distribution<> d (weights); //create a weighted distribution of indices for which to resample particles from
+
+	std::default_random_engine gen;
+    std::vector<Particle> resampled_particles;
+    resampled_particles.resize(num_particles);
+    std::discrete_distribution<> d(weights.begin(), weights.end());
+
+	for(int i=0; i<num_particles; ++i) {
+        resampled_particles[i] = particles[d(gen)];
+    }
+    particles=resampled_particles;
 	
+	/* for debugging purposes only
 	for (int i=0; i<num_particles; i++) {
-		particles[i] = particles[d(gen)];
-		weights[i] = particles[i].weight;
+		cout << "weight " << i+1 << ": " << particles[i].weight << endl;
 	}
 	*/
 
-	std::random_device rd;
-	std::mt19937 generator_wts(rd());
-	std::discrete_distribution<> d(weights.begin(), weights.end());
-	std::vector<Particle> resampledParticles;
-	
-	resampledParticles.resize(num_particles);
-	for (int i=0; i < num_particles; i++) {
-      Particle p = particles[d(generator_wts)];
-      resampledParticles.push_back(p);
-	}
-	particles = resampledParticles;
 }
 
 void ParticleFilter::write(std::string filename) {

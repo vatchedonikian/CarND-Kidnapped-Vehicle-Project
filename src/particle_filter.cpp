@@ -37,8 +37,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 		particles[i].theta = dist_theta(gen);
 		particles[i].weight = 1.0;
 		weights.push_back(particles[i].weight);
+		//cout << "particle: " << particles[i].x << endl;
 	}
-
+	
 	is_initialized = true;	//after setting these, set initialized to true
 }
 
@@ -61,6 +62,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 			particles[i].theta = particles[i].theta + yaw_rate*delta_t;
 		}
 
+		//cout << "x " << particles[i].x <<endl;
+
 		// creates a normal (Gaussian) distribution for x,y,theta
 		normal_distribution<double> dist_x(particles[i].x, std_pos[0]);
 		normal_distribution<double> dist_y(particles[i].y, std_pos[1]);
@@ -69,6 +72,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 		particles[i].x = dist_x(gen);
 		particles[i].y = dist_y(gen);
 		particles[i].theta = dist_theta(gen);
+
+		//cout << "x noise " << particles[i].x << endl;
 
 		/* maybe need this:
 		normal_distribution<double> noise_x(0, std_pos[0]);
@@ -96,13 +101,16 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 			float po_dist = dist(observations[i].x , observations[i].y , predicted[j].x , predicted[j].y);
 			if (po_dist_past < 0) {
 				nearest_neighbor = predicted[j].id; //select po_dist as the nearest neighbor
+				po_dist_past = po_dist;
 			}
 			else if (po_dist < po_dist_past) {
 				nearest_neighbor = predicted[j].id; //select po_dist as the new nearest neighbor.
+				po_dist_past = po_dist;
 			}
 				
 		}
 		observations[i].id = nearest_neighbor;	//assign the id of the nearest predicted landmark to the observation
+		po_dist_past = -1.0;
 	}
 	//so now the loop is done. each osbservation will have a nearest neighbor landmark, assigned in its id
 }
@@ -122,14 +130,20 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   http://planning.cs.uiuc.edu/node99.html
 
 	weights.clear();
-	
+	std::vector<LandmarkObs> pred_map_data;
+
 	for (int i=0; i<num_particles; i++) {    //loop thru particles
+		particles[i].weight = 1; //reinitialize at 1
+		std::vector<LandmarkObs> tobservations;
 		for (int j=0; j<observations.size(); j++) {    //loop thru observations
-			observations[j].x = cos(particles[i].theta)*observations[j].x + sin(particles[i].theta)*observations[j].y + particles[i].x;	//transform into map coords
-			observations[j].y = sin(particles[i].theta)*observations[j].x - cos(particles[i].theta)*observations[j].y + particles[i].y;
+			double tobsx = cos(particles[i].theta)*observations[j].x - sin(particles[i].theta)*observations[j].y + particles[i].x;	//transform into map coords
+			double tobsy = sin(particles[i].theta)*observations[j].x + cos(particles[i].theta)*observations[j].y + particles[i].y;
+			tobservations.push_back(LandmarkObs{observations[j].id,tobsx,tobsy});
+			//cout << "p x,y,th: " << particles[i].x <<" "<<particles[i].y<<" "<<particles[i].theta<<endl;
+			//cout << "obs x: " << observations[j].x << endl;
 		}
 		//call data association to place a landmark ID with each observation.
-		std::vector<LandmarkObs> pred_map_data;
+		pred_map_data.clear();
 		for (int k=0; k<map_landmarks.landmark_list.size(); k++) {
 			float landmark_dist = dist(map_landmarks.landmark_list[k].x_f , map_landmarks.landmark_list[k].y_f , particles[i].x  , particles[i].y);
 			if (landmark_dist < sensor_range) {
@@ -140,17 +154,22 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 				pred_map_data.push_back(mark_temp);
 			}
 		}
-		dataAssociation(pred_map_data, observations); //associate a landmark with each observation
+		
+		dataAssociation(pred_map_data, tobservations); //associate a landmark with each observation
 		//calculate probabilities using multivariate gaussian probability for each observation, multiply with the weight.
 		float sigx = std_landmark[0];
 		float sigy = std_landmark[1];
-		for (int j=0; j<observations.size(); j++) {
-			int mark_num = observations[j].id -1;
-			float prb = (1/(2*3.1415*sigx*sigy))*exp(-(pow((observations[j].x - map_landmarks.landmark_list[mark_num].x_f),2)/(2*sigx*sigx)
-													+pow((observations[j].y - map_landmarks.landmark_list[mark_num].y_f),2)/(2*sigy*sigy)));
+		for (int j=0; j<tobservations.size(); j++) {
+			int mark_num = tobservations[j].id -1;
+			//cout << "mark_num: " << mark_num << endl;
+			float x_sq = pow((tobservations[j].x - map_landmarks.landmark_list[mark_num].x_f),2);
+			float y_sq = pow((tobservations[j].y - map_landmarks.landmark_list[mark_num].y_f),2);
+			//cout << "x_sq= " << x_sq << " y_sq= " << y_sq << endl;
+			float prb = (1/(2*3.1415*sigx*sigy))*exp(-(x_sq/(2*sigx*sigx)+y_sq/(2*sigy*sigy)));
+			//cout << "prb= " << prb << endl;
 			particles[i].weight *= prb;
 		}
-
+		cout << particles[i].weight << endl;
 		weights.push_back(particles[i].weight);
 	}
 }
